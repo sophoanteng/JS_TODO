@@ -13,17 +13,37 @@ const listItem = document.querySelector('#list');
 const check = "fa-check-circle";
 const uncheck = "fa-circle-thin";
 const line = "lineThrough";
-document.addEventListener('keydown', event => {
+var storData = [];
+var id = 0; 
+var data = localStorage.getItem("todo");
+//convert string to JSON
+var todoList = JSON.parse(data);
+if(todoList){
+    todoList.forEach( item => {
+       insertFunction(item.name, item.id, item.done, item.trash);
+    });
+}
+document.addEventListener('keyup', event => {
     if(event.key === "Enter"){
        const toDo = inputItem.value;
        if(toDo){
-        insertFunction(toDo, true);
+        insertFunction(toDo);
+        storData.push({
+            name:toDo,
+            id: id,
+            done: false,
+            trash: false
+        });
+        id++;
+        localStorage.setItem("todo", JSON.stringify(storData));
      }
     inputItem.value = "";
     }
 });
 
-function insertFunction(todo, isDone){
+
+
+function insertFunction(todo, id, isDone, trash){
     const isCheck = isDone ? check : uncheck;
     const isLine = isDone ? line : "";
     const result =`
