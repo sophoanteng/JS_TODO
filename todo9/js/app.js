@@ -5,7 +5,8 @@ const dayAndMonth = {
     month: 'long', 
     day: 'numeric'
 };
-dateElement.innerHTML = new Date().toLocaleString('en-Us', dayAndMonth);
+let time = new Date();
+dateElement.innerHTML = time.toLocaleString('en-Us', dayAndMonth);
 
 const inputItem = document.querySelector('#input');
 const listItem = document.querySelector('#list');
@@ -20,7 +21,8 @@ var data = localStorage.getItem("todo");
 if(data ){
      storData = JSON.parse(data);
      storData.forEach( item => {
-       insertFunction(item.name, item.id, item.done, item.trash);
+       insertFunction(item.name, item.id, item.time, item.done, item.trash);
+       console.log(item);
     });
 }else {
     id = 0;
@@ -29,30 +31,33 @@ if(data ){
 document.addEventListener('keyup', event => {
     if(event.key === "Enter"){
        const toDo = inputItem.value;
+       const timer = time.getMinutes() + ":" + time.getSeconds();
        if(toDo) {
-        insertFunction(toDo);
+        insertFunction(toDo, timer);
         storData.push({
             name:toDo,
             id: id,
+            time: timer,
             done: false,
             trash: false
         });
         id++;
         localStorage.setItem("todo", JSON.stringify(storData));
-     }
-    inputItem.value = "";
+    }
+    clearInput(inputItem);
     }
 });
 
 
-function insertFunction(todo, id, isDone, trash){
+function insertFunction(todo, timer, id, isDone, trash){
     const isCheck = isDone ? check : uncheck;
     const isLine = isDone ? line : "";
+    if(trash) return;
     const result =`
     <li class="item">
-       <i class="fa ${isCheck} co"  job="tisk"></i>
-       <p class="text ${isLine}">${todo}</p>
-       <i class="fa fa-trash-o  de" job="delete"></i>
+       <i class="fa ${isCheck} co"  job="tisk"  id="${id}"></i>
+       <p class="text ${isLine}">${todo} : ${timer}</p>
+       <i class="fa fa-trash-o  de" job="delete" id="${id}"></i>
     </li>
  `;
 listItem.insertAdjacentHTML('beforeend', result);
@@ -69,3 +74,7 @@ document.addEventListener('click', event =>{
     }
     localStorage.setItem("todo", JSON.stringify(storData));
 });
+
+function clearInput() {
+    inputItem.value = "";
+}
